@@ -36,6 +36,7 @@
 	
  		<mapping class="tableDAO.data_read_table"/>
  		<mapping class="tableDAO.data_input_table"/>
+ 		<mapping class="tableDAO.category_master"/>
 	
 		
 	</session-factory>

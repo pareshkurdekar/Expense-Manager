@@ -18,6 +18,44 @@ public class data_read_table {
 	private Timestamp read_time;
 	
 	@Lob
+	@Type(type = "org.hibernate.type.TimestampType")
+	private Timestamp mail_send_time;
+	
+	
+	public Timestamp getMail_send_time() {
+		return mail_send_time;
+	}
+
+	public void setMail_send_time(Timestamp mail_send_time) {
+		this.mail_send_time = mail_send_time;
+	}
+
+	@Lob
+	@Type(type = "org.hibernate.type.TextType")
+	private String mail_send;
+	
+	@Lob
+	@Type(type = "org.hibernate.type.TextType")
+	private String mail_send_attachments;
+	
+	
+	public String getMail_send() {
+		return mail_send;
+	}
+
+	public void setMail_send(String mail_send) {
+		this.mail_send = mail_send;
+	}
+
+	public String getMail_send_attachments() {
+		return mail_send_attachments;
+	}
+
+	public void setMail_send_attachments(String mail_send_attachments) {
+		this.mail_send_attachments = mail_send_attachments;
+	}
+
+	@Lob
 	@Type(type = "org.hibernate.type.TextType")
 	private String status;
 	

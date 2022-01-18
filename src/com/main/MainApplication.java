@@ -20,8 +20,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Query;
+import org.knowm.xchart.PieChart;
 
 import excelConversion.pdfTableAPI;
+import graphs.makeGraphs;
+import mailSender.sendMail;
+import tableDAO.category_master;
 import tableDAO.data_read_table;
 import unlockPDF.decryptPDF;
 
@@ -36,6 +40,7 @@ public class MainApplication {
 	String excelFilePath = "";
 	String apiKey = "";
 	String url = "";
+	String graphFilePath = "";
 	
 	static List<Date> dates = new ArrayList<Date>();
 	static List<String> modes = new ArrayList<String>();
@@ -74,7 +79,12 @@ public class MainApplication {
 		
 		DataInputReading.pushExcelToDB(excelFilePath);
 		
+		 List<String> category = new ArrayList<String>();
+		 category = getCategoryValues();
 		
+		 HashMap<String, Double> chartValues = new HashMap<String, Double>();
+
+
 	
 	//	DataInputReading.checkForExcel();
 		
@@ -98,6 +108,8 @@ public class MainApplication {
 			month.clear();
 			year.clear();
 			row_cell_values.clear();
+			
+			chartValues.clear();
 			
 			data_read_table readData = new data_read_table();
 			readData = allReadObj.get(i);
@@ -125,9 +137,22 @@ public class MainApplication {
 					System.out.println("Printing Tranactions");
 				//	printTransactions();
 					
-					DataInputReading.pushToDB(dates,modes,description,deposit,withdrawals,balance,year,month);
+					DataInputReading.pushToDB(dates,modes,description,deposit,withdrawals,balance,year,month, category);
 				
+					
+					
+					DataInputReading.getValuesForCharts("withdrawal", chartValues, month.get(0), year.get(0));
+					PieChart withdrawalChart = makeGraphs.create(chartValues, "Withdrawals");
+					makeGraphs.save(withdrawalChart, graphFilePath,  month.get(0), year.get(0), "Withdrawals");
+					
+					DataInputReading.getValuesForCharts("deposit", chartValues, month.get(0), year.get(0));
+					PieChart depositChart = makeGraphs.create(chartValues, "Deposits");
+					makeGraphs.save(depositChart, graphFilePath,  month.get(0), year.get(0), "Deposits");
+				
+			
 					readData.setStatus("Success");
+					
+					sendMail.send(unlockedPdfFilePath, graphFilePath);
 				
 				} 
 				catch (FileNotFoundException e) 
@@ -156,6 +181,21 @@ public class MainApplication {
 		
 	}
 
+	private List<String> getCategoryValues() {
+		// TODO Auto-generated method stub
+		
+		List<category_master> temp = DatabaseConnections.session.createQuery("from category_master").list();
+		List<String> category = new ArrayList<String>();
+		for(category_master s: temp)
+		{
+			System.out.println(s.getCategory());
+			category.add(s.getCategory());
+		}
+		
+		//System.out.println(category.get(0));
+		return category;
+	}
+
 	private void readPropertiesFile() {
 		// TODO Auto-generated method stub
 		
@@ -168,6 +208,7 @@ public class MainApplication {
 			excelFilePath = prop.getProperty("excelFilePath");
 			apiKey = prop.getProperty("apiKey");
 			url = prop.getProperty("url");
+			graphFilePath = prop.getProperty("graphFilePath");
 					
 			System.out.println(password);
 			System.out.println(lockedPdfFilePath);
@@ -299,6 +340,8 @@ public class MainApplication {
 			
 		}
 	}
+	
+	
 
 		
 	}
@@ -330,7 +373,7 @@ public class MainApplication {
 		if(str != null && !str.isEmpty())
 		{
 			System.out.println("True: " + str);
-			balance.add(str);
+			balance.add(str.replace(",",""));
 			System.out.println("Balance Size: " + balance.size());
 		}
 		
@@ -352,7 +395,7 @@ public class MainApplication {
 		{
 			System.out.println("True: " + withdrawl);
 			//deposit.add(dep);
-			withdrawals.add(withdrawl);
+			withdrawals.add(withdrawl.replace(",", ""));
 		}
 		
 		System.out.println("Withdrawals Size: " + withdrawals.size());
@@ -375,7 +418,7 @@ public class MainApplication {
 		if(isDate(date))
 		{
 			System.out.println("True: " + dep);
-			deposit.add(dep);
+			deposit.add(dep.replace(",", ""));
 		}
 		System.out.println("Deposit Size: " + deposit.size());
 	}

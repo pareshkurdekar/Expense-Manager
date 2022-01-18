@@ -3,7 +3,9 @@ package com.main;
 import java.io.File;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -16,16 +18,75 @@ public class DataInputReading {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		DatabaseConnections.startSession();
-	//	checkForExcel();
-//		DatabaseConnections.closeSession();
+			DatabaseConnections.startSession();
+		//	checkForExcel();
+		//	DatabaseConnections.closeSession();
 		
-		pushExcelToDB("D:\\PEM - Documents\\Excel Sheets");
+		//	pushExcelToDB("D:\\PEM - Documents\\Excel Sheets");
+		 HashMap<String, Double> chartValues = new HashMap<String, Double>();
+		
+
+		getValuesForCharts("deposit", chartValues, "09", "2021");
+		 DatabaseConnections.closeSession();
+		
+	}
+
+	private static String setCategoryValues(String mode, String description, List<String> category) {
+		
+		String temp = "";
+		if(mode == null || mode.isEmpty())
+		{
+			temp = description;
+		}
+		else
+		{
+			 temp = mode + " " + description;
+		}
+		
+	
+		
+		for( String s: category)
+		{
+			if(temp.toUpperCase().contains(s.toUpperCase()))
+			{
+			
+				System.out.println(s);
+				if(s.toUpperCase().equalsIgnoreCase("Earned for usin"))
+				{
+					return "GOOGLE REWARDS";
+				}
+				if(s.toUpperCase().equalsIgnoreCase("BKID0008176"))
+				{
+					return "LOAN EMI";
+				}
+				if(s.toUpperCase().equalsIgnoreCase("kurdekar.pdmny"))
+				{
+					return "SISTER";
+				}
+				if(s.toUpperCase().equalsIgnoreCase("chandrakurdekar"))
+				{
+					return "MOM";
+				}
+				if(s.toUpperCase().equalsIgnoreCase("ICSP"))
+				{
+					return "ICICI SALARY";
+				}
+				
+				return s;
+				
+			}
+				
+		}
+		
+		
+		System.out.println(temp);
+		return temp;
+		// TODO Auto-generated method stub
 		
 	}
 
 	public static void pushToDB(List<Date> dates, List<String> modes, List<String> description, List<String> deposit,
-			List<String> withdrawals, List<String> balance, List<String> year, List<String> month) {
+			List<String> withdrawals, List<String> balance, List<String> year, List<String> month, List<String> category) {
 		// TODO Auto-generated method stub
 		
 		int size = dates.size();
@@ -49,6 +110,11 @@ public class DataInputReading {
 			obj.setTx_month(month.get(i));
 					
 			obj.setTx_year(year.get(i));
+			
+			String cat = DataInputReading.setCategoryValues(modes.get(i), description.get(i), category);
+			
+			obj.setCategory(cat);
+			
 			DatabaseConnections.saveObj(obj);
 		}
 		
@@ -139,7 +205,7 @@ public class DataInputReading {
 					String[] x = file.getName().split("_")[1].split("MTH");
 					obj.setMonth(x[1]);
 					obj.setYear(x[0]);
-					
+					obj.setMail_send("Pending");
 					DatabaseConnections.saveObj(obj);
 					
 				}
@@ -169,6 +235,53 @@ public class DataInputReading {
 		}
 		
 		return false;
+	}
+
+	public static void getValuesForCharts(String title, HashMap<String, Double> chartValues, String month, String year) {
+		// TODO Auto-generated method stub
+		chartValues.clear();
+		Query q =  DatabaseConnections.session.createQuery("from data_input_table where tx_month = ?1 and tx_year = ?2 and coalesce(" +title+", '') != ''" );
+	//	Query q =  DatabaseConnections.session.createQuery("from data_input_table where tx_month = ?1 and tx_year = ?2 and coalesce( ?0 , '') != ''" );
+	//	q.setParameter(0, title.trim());
+		q.setParameter(1, month);
+		q.setParameter(2, year);
+		
+		 List<data_input_table> obj = q.list();
+		System.out.println(obj.size());
+		System.out.println(q.getQueryString());
+		Double value = 0.0;
+		for( data_input_table row: obj)
+		{
+			
+		if(title.equalsIgnoreCase("withdrawal"))
+		{
+			value = Double.parseDouble( row.getWithdrawal());
+			
+		}
+		else if (title.equalsIgnoreCase("deposit"))
+		{
+			value = Double.parseDouble( row.getDeposit());
+
+		}
+		
+			
+			if(chartValues.containsKey(row.getCategory()))
+			{
+				chartValues.put(row.getCategory(), chartValues.get(row.getCategory()) + value );
+				//chartValues.put(row.getCategory(), 2.3);
+			}
+			else
+			{
+				chartValues.put(row.getCategory(), value);
+			}
+			
+		}
+		
+	
+		System.out.println(title);
+		
+		
+		
 	}
 		
 

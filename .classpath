@@ -44,5 +44,22 @@
 	<classpathentry kind="lib" path="lib/httpmime-4.5.13.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.6.jar"/>
 	<classpathentry kind="lib" path="lib/pdfbox-2.0.25.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/animated-gif-lib-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/graphics2d-0.32.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/javafx-base-11.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/javafx-base-11.0.2-linux.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/javafx-controls-11.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/javafx-controls-11.0.2-linux.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/javafx-graphics-11.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/javafx-graphics-11.0.2-linux.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/javafx-swing-11.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/javafx-swing-11.0.2-linux.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/VectorGraphics2D-0.13.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/xchart-3.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/xchart-demo-3.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/fontbox-2.0.24.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/pdfbox-2.0.24.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/xchart_lib/javax.mail-1.6.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
